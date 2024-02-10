@@ -1,15 +1,17 @@
 package br.com.cassiofiuza;
 
-import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.http.ContentType;
-import io.vertx.core.json.JsonObject;
-
-import org.junit.jupiter.api.Test;
-
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.notNullValue;;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
+
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;;
 
 @QuarkusTest
 class ClienteResourceTest {
@@ -79,6 +81,23 @@ class ClienteResourceTest {
                 .statusCode(200)
                 .body("saldo.total", equalTo(0))
                 .body("saldo.limite", equalTo(500000));
+    }
+
+    @Test
+    void deveTrazerTransacoesOrdenasPorDataRealizacao() {
+        realizarMultiplasOperacoesMantendoSaldoFinalIgualInicial();
+        JsonObject response = new JsonObject(
+                given()
+                        .when().get("/cliente/5/extrato")
+                        .getBody().asString());
+        JsonArray ultimasTransacoes = response.getJsonArray("ultimas_transacoes");
+
+        for (int i = 1; i < ultimasTransacoes.size(); i++) {
+            JsonObject transacaoAnterior = ultimasTransacoes.getJsonObject(i - 1);
+            JsonObject transasaoPosterior = ultimasTransacoes.getJsonObject(i);
+            assertTrue(transacaoAnterior.getInstant("realizada_em")
+                    .isAfter(transasaoPosterior.getInstant("realizada_em")));
+        }
     }
 
     private final void realizarMultiplasOperacoesMantendoSaldoFinalIgualInicial() {

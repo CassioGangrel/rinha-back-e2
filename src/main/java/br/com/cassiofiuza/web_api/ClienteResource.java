@@ -38,9 +38,9 @@ public class ClienteResource {
             transacoes.put("valor", transacao.valor());
             transacoes.put("tipo", transacao.tipo());
             transacoes.put("descricao", transacao.descricao());
-            transacoes.put("realizada_em", DateTimeFormatter.ISO_INSTANT.format(transacao.realizadaEm()));
+            transacoes.put("realizada_em", transacao.realizadaEm());
             return transacoes;
-        }).reduce(new JsonArray(), (acc, next) -> acc, (acc, next) -> acc);
+        }).reduce(new JsonArray(), (acc, next) -> acc.add(next), (acc, next) -> acc);
         JsonObject response = new JsonObject();
         response.put("saldo", saldo);
         response.put("ultimas_transacoes", ultimasTransacoes);

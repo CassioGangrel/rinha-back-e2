@@ -138,6 +138,7 @@ class Repository {
           s.cliente_id = c.id
         where
           c.id = ?
+        order by t.realizada_em desc
         limit 10;
         """;
 
