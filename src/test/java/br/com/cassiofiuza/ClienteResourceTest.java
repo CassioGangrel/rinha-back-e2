@@ -7,11 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.Matchers.hasLength;
 import static org.hamcrest.Matchers.empty;
-
-import java.util.Collection;
-import java.util.Collections;
 
 @QuarkusTest
 class ClienteResourceTest {
@@ -29,7 +25,7 @@ class ClienteResourceTest {
     }
 
     @Test
-    void deveCriarNovaTransacaoCreditoCliente() {
+    void deveCriarNovaTransacaoDepositoCliente() {
         var dadosCriacaoTrasacao = """
                 {"valor":1000,"tipo":"c","descricao":"teste"}
                 """;
@@ -42,5 +38,36 @@ class ClienteResourceTest {
                 .statusCode(200)
                 .body("limit", equalTo(100000))
                 .body("saldo", equalTo(1000));
+    }
+
+    @Test
+    void deveCriarNovaTransacaoDebitoCliente() {
+        var dadosCriacaoTrasacao = """
+                {"valor":1000,"tipo":"d","descricao":"teste"}
+                """;
+        given()
+                .contentType(ContentType.JSON)
+                .body(dadosCriacaoTrasacao)
+                .when().post("/cliente/3/transacoes")
+                .then()
+                .contentType(ContentType.JSON)
+                .statusCode(200)
+                .body("limit", equalTo(1000000))
+                .body("saldo", equalTo(-1000));
+    }
+
+
+
+    @Test
+    void NaoDevePermitirTransacaoDebitoAlemDoLimiteCliente() {
+        var dadosCriacaoTrasacao = """
+                {"valor":10000001,"tipo":"d","descricao":"teste"}
+                """;
+        given()
+                .contentType(ContentType.JSON)
+                .body(dadosCriacaoTrasacao)
+                .when().post("/cliente/4/transacoes")
+                .then()
+                .statusCode(400);
     }
 }
