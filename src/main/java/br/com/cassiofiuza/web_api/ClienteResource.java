@@ -1,9 +1,5 @@
 package br.com.cassiofiuza.web_api;
 
-import java.time.format.DateTimeFormatter;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
-
 import br.com.cassiofiuza.cliente.ClienteFacade;
 import br.com.cassiofiuza.cliente.records.Extrato;
 import br.com.cassiofiuza.cliente.records.NovaTransacao;

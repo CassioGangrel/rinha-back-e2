@@ -10,7 +10,7 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 public class ClienteFacade {
   @Inject
-  Repository repository;
+  ClienteDao repository;
 
   public Extrato buscarExtratoCliente(Integer id) {
     return this.repository.buscarExtratoCliente(id);
