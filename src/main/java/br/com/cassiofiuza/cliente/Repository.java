@@ -54,8 +54,7 @@ class Repository {
                   rs.getInt("t_valor"),
                   rs.getString("t_tipo").charAt(0),
                   rs.getString("t_descricao"),
-                  LocalDateTime.from(
-                      DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS").parse(rs.getString("t_realizada_em"))));
+                  rs.getTimestamp("t_realizada_em").toInstant());
               return Optional.of(transacao);
             }
             return Optional.empty();

@@ -1,11 +1,11 @@
 package br.com.cassiofiuza.cliente.records;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public record Transacao (
   Integer id,
-  Integer value,
+  Integer valor,
   Character tipo,
   String descricao,
-  LocalDateTime realizadaEm
+  Instant realizadaEm
 ){}

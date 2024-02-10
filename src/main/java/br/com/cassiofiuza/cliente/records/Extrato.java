@@ -7,7 +7,7 @@ import jakarta.json.bind.annotation.JsonbProperty;
 public record Extrato (
   Integer id,
   String nome,
-  Integer limit,
+  Integer limite,
   Integer saldo,
   @JsonbProperty(value = "ultimas_transacoes")
   List<Transacao> ultimasTransacoes
