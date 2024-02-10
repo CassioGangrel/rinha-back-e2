@@ -56,8 +56,6 @@ class ClienteResourceTest {
                 .body("saldo", equalTo(-1000));
     }
 
-
-
     @Test
     void NaoDevePermitirTransacaoDebitoAlemDoLimiteCliente() {
         var dadosCriacaoTrasacao = """
