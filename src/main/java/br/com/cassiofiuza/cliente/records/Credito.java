@@ -5,18 +5,18 @@ import jakarta.ws.rs.BadRequestException;
 
 public record Credito(
     int saldo,
-    int limit) {
+    int limite) {
 
   public Credito depositar(int valor) {
-    return new Credito(this.saldo + valor, this.limit);
+    return new Credito(this.saldo + valor, this.limite);
   }
 
   public Resultado<Credito, String> sacar(int valor) {
     var novoSaldo = this.saldo - valor;
-    if (novoSaldo < (this.limit * -1)) {
+    if (novoSaldo < (this.limite * -1)) {
       return Resultado.falha("Credito insuficiete");
     }
-    return Resultado.sucesso(new Credito(novoSaldo, this.limit));
+    return Resultado.sucesso(new Credito(novoSaldo, this.limite));
   }
 
   public Credito aplicaOperacao(char tipo, int valor) {

@@ -18,6 +18,7 @@ public class ClienteFacade {
 
   @Transactional
   public Credito novaTransacao(Integer id, NovaTransacao novaTransacao) {
+    novaTransacao.check();
     Credito credito = this.repository.buscarSaldoCliente(id);
     char tipoTransacao = Character.toLowerCase(novaTransacao.tipo().charAt(0));
     Credito novoCredito = credito.aplicaOperacao(tipoTransacao, novaTransacao.valor());

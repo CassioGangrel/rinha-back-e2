@@ -6,6 +6,7 @@ import static java.sql.ResultSet.TYPE_SCROLL_SENSITIVE;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -13,17 +14,21 @@ import java.util.concurrent.Callable;
 
 import javax.sql.DataSource;
 
+import org.jboss.logging.Logger;
+
 import br.com.cassiofiuza.cliente.records.Credito;
 import br.com.cassiofiuza.cliente.records.Extrato;
 import br.com.cassiofiuza.cliente.records.NovaTransacao;
 import br.com.cassiofiuza.cliente.records.Transacao;
+import io.netty.util.internal.shaded.org.jctools.queues.MessagePassingQueue.Supplier;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.InternalServerErrorException;
+import jakarta.ws.rs.NotFoundException;
 
 @ApplicationScoped
 class ClienteDao {
+  Logger logger = Logger.getLogger(getClass());
   @Inject
   DataSource ds;
 
@@ -36,7 +41,7 @@ class ClienteDao {
         ps.setInt(BuscarExtradoClietne.ID_CLIENTE, id);
         try (ResultSet rs = ps.executeQuery()) {
           if (!rs.first()) {
-            throw new BadRequestException();
+            throw new NotFoundException();
           }
           Extrato cliente = new Extrato(
               rs.getInt("c_id"),
@@ -44,27 +49,31 @@ class ClienteDao {
               rs.getInt("c_limite"),
               rs.getInt("s_valor"),
               new ArrayList<>());
-          Callable<Optional<Transacao>> construirTransacao = () -> {
+          Supplier<Optional<Transacao>> construirTransacao = () -> {
+            try {
             Integer idTransacao = rs.getInt("t_id");
             if (idTransacao != 0) {
-              Transacao transacao = new Transacao(
-                  idTransacao,
-                  rs.getInt("t_valor"),
-                  rs.getString("t_tipo").charAt(0),
-                  rs.getString("t_descricao"),
-                  rs.getTimestamp("t_realizada_em").toInstant());
-              return Optional.of(transacao);
+                Transacao transacao = new Transacao(
+                    idTransacao,
+                    rs.getInt("t_valor"),
+                    rs.getString("t_tipo").charAt(0),
+                    rs.getString("t_descricao"),
+                    rs.getTimestamp("t_realizada_em").toInstant());
+                return Optional.of(transacao);
+              }
+            } catch (SQLException e) {
+              logger.warn(e);
             }
             return Optional.empty();
           };
-          construirTransacao.call().ifPresent(cliente.ultimasTransacoes()::add);
+          construirTransacao.get().ifPresent(cliente.ultimasTransacoes()::add);
           while (rs.next()) {
-            construirTransacao.call().ifPresent(cliente.ultimasTransacoes()::add);
+            construirTransacao.get().ifPresent(cliente.ultimasTransacoes()::add);
           }
           return cliente;
         }
       }
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new InternalServerErrorException(e);
     }
   }
@@ -107,11 +116,13 @@ class ClienteDao {
           BuscarSaldoCliente.QUERY_TEMPLATE, TYPE_SCROLL_SENSITIVE, CONCUR_UPDATABLE)) {
         prst.setInt(BuscarSaldoCliente.ID_CLIENTE, id);
         try (ResultSet rs = prst.executeQuery()) {
-          rs.next();
-          return new Credito(rs.getInt(1), rs.getInt(2));
+          if (rs.next()) {
+            return new Credito(rs.getInt(1), rs.getInt(2));
+          }
+          throw new NotFoundException();
         }
       }
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new InternalServerErrorException(e);
     }
   }

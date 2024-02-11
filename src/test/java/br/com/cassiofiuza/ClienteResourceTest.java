@@ -18,7 +18,7 @@ class ClienteResourceTest {
     @Test
     void deveBuscarExtratoCliente() {
         given()
-                .when().get("/cliente/2/extrato")
+                .when().get("/clientes/2/extrato")
                 .then()
                 .statusCode(200)
                 .body("saldo.total", equalTo(0))
@@ -35,11 +35,11 @@ class ClienteResourceTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(dadosCriacaoTrasacao)
-                .when().post("/cliente/1/transacoes")
+                .when().post("/clientes/1/transacoes")
                 .then()
                 .contentType(ContentType.JSON)
                 .statusCode(200)
-                .body("limit", equalTo(100000))
+                .body("limite", equalTo(100000))
                 .body("saldo", equalTo(1000));
     }
 
@@ -51,11 +51,11 @@ class ClienteResourceTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(dadosCriacaoTrasacao)
-                .when().post("/cliente/3/transacoes")
+                .when().post("/clientes/3/transacoes")
                 .then()
                 .contentType(ContentType.JSON)
                 .statusCode(200)
-                .body("limit", equalTo(1000000))
+                .body("limite", equalTo(1000000))
                 .body("saldo", equalTo(-1000));
     }
 
@@ -67,16 +67,76 @@ class ClienteResourceTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(dadosCriacaoTrasacao)
-                .when().post("/cliente/4/transacoes")
+                .when().post("/clientes/4/transacoes")
                 .then()
-                .statusCode(400);
+                .statusCode(422);
+    }
+
+    @Test
+    void NaoDevePermitirTipoDesconhecido() {
+        var dadosCriacaoTrasacao = """
+                {"valor":500,"tipo":"r","descricao":"teste"}
+                """;
+        given()
+                .contentType(ContentType.JSON)
+                .body(dadosCriacaoTrasacao)
+                .when().post("/clientes/4/transacoes")
+                .then()
+                .statusCode(422);
+    }
+
+    @Test
+    void NaoDevePermitirDescricaoVazia() {
+        var dadosCriacaoTrasacao = """
+                {"valor":500,"tipo":"r","descricao":""}
+                """;
+        given()
+                .contentType(ContentType.JSON)
+                .body(dadosCriacaoTrasacao)
+                .when().post("/clientes/4/transacoes")
+                .then()
+                .statusCode(422);
+    }
+
+    @Test
+    void NaoDevePermitirDescricaoMaiorQue10() {
+        var dadosCriacaoTrasacao = """
+                {"valor":500,"tipo":"r","descricao":"Minha Descr"}
+                """;
+        given()
+                .contentType(ContentType.JSON)
+                .body(dadosCriacaoTrasacao)
+                .when().post("/clientes/4/transacoes")
+                .then()
+                .statusCode(422);
+    }
+
+    @Test
+    void deveRetornar404ParaClienteNaoEncontradoAoBuscarExtrato() {
+        given()
+                .when().get("/clientes/9999999/extrato")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    void deveRetornar404AoTentarCriarTransacaoParaClienteQueNaoExiste() {
+        var dadosCriacaoTrasacao = """
+                {"valor":10000001,"tipo":"d","descricao":"teste"}
+                """;
+        given()
+                .contentType(ContentType.JSON)
+                .body(dadosCriacaoTrasacao)
+                .when().post("/clientes/9999999/transacoes")
+                .then()
+                .statusCode(404);
     }
 
     @Test
     void deveManterSaldoConsitenteAposVariasTransacoes() {
         realizarMultiplasOperacoesMantendoSaldoFinalIgualInicial();
         given()
-                .when().get("/cliente/5/extrato")
+                .when().get("/clientes/5/extrato")
                 .then()
                 .statusCode(200)
                 .body("saldo.total", equalTo(0))
@@ -88,7 +148,7 @@ class ClienteResourceTest {
         realizarMultiplasOperacoesMantendoSaldoFinalIgualInicial();
         JsonObject response = new JsonObject(
                 given()
-                        .when().get("/cliente/5/extrato")
+                        .when().get("/clientes/5/extrato")
                         .getBody().asString());
         JsonArray ultimasTransacoes = response.getJsonArray("ultimas_transacoes");
 
@@ -112,14 +172,14 @@ class ClienteResourceTest {
                 given()
                         .contentType(ContentType.JSON)
                         .body(dadosCriacaoTrasacaoCredito)
-                        .when().post("/cliente/5/transacoes")
+                        .when().post("/clientes/5/transacoes")
                         .then()
                         .statusCode(200);
             } else {
                 given()
                         .contentType(ContentType.JSON)
                         .body(dadosCriacaoTrasacaoDebito)
-                        .when().post("/cliente/5/transacoes")
+                        .when().post("/clientes/5/transacoes")
                         .then()
                         .statusCode(200);
             }

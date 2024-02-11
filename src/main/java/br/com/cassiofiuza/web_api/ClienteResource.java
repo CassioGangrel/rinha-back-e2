@@ -15,7 +15,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-@Path("/cliente")
+@Path("/clientes")
 public class ClienteResource {
     @Inject
     ClienteFacade clienteFacade;
@@ -47,7 +47,11 @@ public class ClienteResource {
     @Path("{id}/transacoes")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response novaTransacao(@PathParam("id") Integer id, NovaTransacao novaTransacao) {
+    public Response novaTransacao(@PathParam("id") Integer id, JsonObject input) {
+        String valor = input.getString("valor");
+        String tipo = input.getString("tipo");
+        String descricao = input.getString("descricao");
+        NovaTransacao novaTransacao = new NovaTransacao(valor, tipo, descricao);
         var resultado = this.clienteFacade.novaTransacao(id, novaTransacao);
         return Response.ok(resultado).build();
     }
