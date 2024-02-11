@@ -99,6 +99,19 @@ class ClienteResourceTest {
     }
 
     @Test
+    void naoDevePermitirValoresPontoFlutuante() {
+        var dadosCriacaoTrasacao = """
+                {"valor":1.0,"tipo":"r","descricao":""}
+                """;
+        given()
+                .contentType(ContentType.JSON)
+                .body(dadosCriacaoTrasacao)
+                .when().post("/clientes/4/transacoes")
+                .then()
+                .statusCode(422);
+    }
+
+    @Test
     void NaoDevePermitirDescricaoMaiorQue10() {
         var dadosCriacaoTrasacao = """
                 {"valor":500,"tipo":"r","descricao":"Minha Descr"}
