@@ -1,6 +1,6 @@
 services:
   api01: &api
-    image: cassiogangrel/rinha_e2:1.0.0-SNAPSHOT
+    image: cassiogangrel/rinha_e2:1.0.0
     hostname: api01
     network_mode: host
     depends_on:
