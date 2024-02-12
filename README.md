@@ -8,7 +8,18 @@ Este projeto foi desenvolvido para participar da segunda edição da rinha backe
 
 ## Tecnologias utilizadas
 
-Foi utilizado ![Quarkus](https://quarkus.io/) como framework base do projeto com as seguintes extençoes -> [agroal, cdi, flyway, jdbc-postgresql, narayana-jta, resteasy, resteasy-jsonb, smallrye-context-propagation, smallrye-health, vertx].
+Foi utilizado ![Quarkus](https://quarkus.io/) como framework base do projeto com as seguintes extençoes
+
+1. agroal
+2. cdi
+3. flyway
+4. jdbc-postgresql
+5. narayana-jta
+6. resteasy
+7. resteasy-jsonb
+8. smallrye-context-propagation
+9. smallrye-health, vertx].
+
 Compilamos para nativo utilizando ![GraalVM](https://www.graalvm.org/) utilizando plugin fornecido pelo proprio framework.
 
 ## Rodando a Aplicação em modo DEV
