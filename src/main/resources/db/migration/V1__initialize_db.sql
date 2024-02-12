@@ -16,6 +16,7 @@ CREATE TABLE transacoes (
 );
 
 CREATE INDEX transacoes_cliente_id_idx ON transacoes (cliente_id);
+CREATE INDEX transacoes_realizada_em_idx ON transacoes (realizada_em DESC);
 
 CREATE TABLE saldos (
 	id SERIAL PRIMARY KEY,
