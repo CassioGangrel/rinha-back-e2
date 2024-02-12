@@ -1,6 +1,6 @@
 services:
   api01: &api
-    image: cassiogangrel/coolstuff:1.0.0-SNAPSHOT
+    image: cassiogangrel/rinha_e2:1.0.0-SNAPSHOT
     hostname: api01
     network_mode: host
     depends_on:
@@ -19,7 +19,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.4"
+          cpus: "0.35"
           memory: "200MB"
   api02:
     <<: *api
@@ -58,7 +58,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.15"
+          cpus: "0.25"
           memory: "20MB"
 
 networks:
