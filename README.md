@@ -13,6 +13,8 @@ Compilamos para nativo utilizando ![GraalVM](https://www.graalvm.org/) utilizand
 
 ## Rodando a Aplicação em modo DEV
 
+O quarkus usa ![dev service](https://quarkus.io/guides/dev-services) em desenvolvimento com isso não é preciso ter o postgres instalado para rodar em desenvolvimento, o que não é verdade em produção. Para rodar e modo dev basta executar o comando abaixo.
+
 ```shell script
 ./mvnw compile quarkus:dev
 ```
@@ -52,3 +54,15 @@ Se não tiver a GraalVM utilize o comando abaixo ele ira utilizar um container d
 
 o executavel nativo estara na pasta target você pode executalo com o seguinte comando `./target/rinha_e2-1.0.0-SNAPSHOT-runner`
 
+## Rodando os testes de Integração
+
+Temos teste de integração para validar os requisitos da rinha, a maioria dos comandos acima já executam os testes antes de buildar caso não queira executar os testes nos comandos acima use a flag `-DskipTests`
+
+```shell script
+./mvnw verify
+```
+
+## Rodando os testes de carga da rinha
+
+No diretorio `load-test/user-files/simulations/rinhabackend/RinhaBackendCrebitosSimulation.scala`  esta o arquivo com o script de teste usado no desenvolvimento do projeto, este arquivo é fornecido pela rinha e atualizações nele não são sincronizadas.
+Na raiz temos o arquivo `executar-teste-local.sh` antes de executalo para inicar os teste de carga é necessario atualizar ele com o caminho para a pasta bin do ![Gatling](https://gatling.io/docs/gatling/tutorials/installation/) com tudo configurado basta executar `./executar-teste-local.sh`.
