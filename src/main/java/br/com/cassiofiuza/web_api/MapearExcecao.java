@@ -12,17 +12,13 @@ public class MapearExcecao implements ExceptionMapper<Exception> {
 
   @Override
   public Response toResponse(Exception exception) {
-    JsonObject response = new JsonObject();
-    if (exception instanceof BadRequestException badRequestException) {
-      response.put("mensagem", badRequestException.getMessage());
-      return Response.status(422).entity(response).build();
+    if (exception instanceof BadRequestException) {
+      return Response.status(422).build();
     }
-    if (exception instanceof NotFoundException notFoundException) {
-      response.put("mensagem", notFoundException.getMessage());
-      return Response.status(404).entity(response).build();
+    if (exception instanceof NotFoundException) {
+      return Response.status(404).build();
     }
-    response.put("mensagem", "Sinto muito mas não foi possivel atenter a sua solicação!");
-    return Response.status(500).entity(response).build();
+    return Response.status(500).build();
   }
   
 }
