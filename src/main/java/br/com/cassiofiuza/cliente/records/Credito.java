@@ -1,8 +1,10 @@
 package br.com.cassiofiuza.cliente.records;
 
 import br.com.cassiofiuza.apoio.Resultado;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.ws.rs.BadRequestException;
 
+@RegisterForReflection
 public record Credito(
     int saldo,
     int limite) {
